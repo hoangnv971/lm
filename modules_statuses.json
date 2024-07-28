@@ -1,3 +1,4 @@
 {
-    "AdminTheme": true
+    "AdminTheme": true,
+    "Auth": true
 }

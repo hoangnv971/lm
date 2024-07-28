@@ -5,7 +5,8 @@ namespace Modules\AdminTheme\Providers;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Vite;
-
+use Illuminate\Support\Facades\View;
+use Modules\AdminTheme\Services\AdminMenuService;
 class AdminThemeServiceProvider extends ServiceProvider
 {
     protected string $moduleName = 'AdminTheme';
@@ -23,8 +24,7 @@ class AdminThemeServiceProvider extends ServiceProvider
         $this->registerConfig();
         $this->registerViews();
         $this->loadMigrationsFrom(module_path($this->moduleName, 'database/migrations'));
-        Vite::macro('LTEImage', fn (string $asset) => $this->asset("Modules/AdminTheme/resources/assets/images/{$asset}"));
-
+        $this->shareAdminMenuWithView();
     }
 
     /**
@@ -34,7 +34,8 @@ class AdminThemeServiceProvider extends ServiceProvider
     {
         $this->app->register(EventServiceProvider::class);
         $this->app->register(RouteServiceProvider::class);
-        $this->app->register(MenuProvider::class);
+        $this->registerAdminMenuService();
+        
     }
 
     /**
@@ -95,6 +96,7 @@ class AdminThemeServiceProvider extends ServiceProvider
 
         $componentNamespace = str_replace('/', '\\', config('modules.namespace').'\\'.$this->moduleName.'\\'.ltrim(config('modules.paths.generator.component-class.path'), config('modules.paths.app_folder', '')));
         Blade::componentNamespace($componentNamespace, $this->moduleNameLower);
+        Vite::macro('LTEImage', fn (string $asset) => $this->asset("Modules/AdminTheme/resources/assets/images/{$asset}"));
     }
 
     /**
@@ -121,4 +123,18 @@ class AdminThemeServiceProvider extends ServiceProvider
 
         return $paths;
     }
+
+    protected function registerAdminMenuService(): void
+    {
+        $this->app->singleton('admin.menu', function($app){
+            return new AdminMenuService();
+        });
+    }
+
+    protected function shareAdminMenuWithView(){
+        View::composer('/admin*', function ($view) {
+            $view->with('adminMenuItems', AdminMenuService::class);
+        });
+    }
+
 }

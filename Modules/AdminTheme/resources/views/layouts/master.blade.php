@@ -6,7 +6,7 @@
     <div class="app-wrapper"> <!--begin::Header-->
         @include('admintheme::layouts.navbar')
         {{-- @include('admintheme::layouts.aside') --}}
-        <x-admintheme-component-layouts-aside/>
+        <x-admintheme::layouts.aside/>
         <main class="app-main"> <!--begin::App Content Header-->
             <div class="app-content-header"> <!--begin::Container-->
                 <div class="container-fluid"> <!--begin::Row-->

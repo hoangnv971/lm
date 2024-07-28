@@ -20,6 +20,7 @@ class Aside extends Component
      */
     public function render(): View|string
     {
-        return view('admintheme::components.layouts.aside');
+        $menuItems = app("admin.menu");
+        return view('admintheme::components.layouts.aside', compact('menuItems', ));
     }
 }
